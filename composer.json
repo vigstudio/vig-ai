@@ -1,0 +1,21 @@
+{
+    "name": "vigstudio/vig-ai",
+    "type": "package",
+    "description": "AI content for Botble CMS",
+    "homepage": "http://nghiane.com",
+    "authors": [
+        {
+            "name": "Nghĩa Nè",
+            "homepage": "http://nghiane.com"
+        }
+    ],
+    "require": {
+        "vigstudio/laravel-ai": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "VigStudio\\VigAI\\": "src/"
+        }
+    },
+    "config": {}
+}

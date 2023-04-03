@@ -1,0 +1,140 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "39262c3e7a1622ec07ee358b1d99b3b1",
+    "packages": [
+        {
+            "name": "orhanerday/open-ai",
+            "version": "4.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/orhanerday/open-ai.git",
+                "reference": "d2d96d0521ef3118cc4f33a5d54718b62aedd336"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/orhanerday/open-ai/zipball/d2d96d0521ef3118cc4f33a5d54718b62aedd336",
+                "reference": "d2d96d0521ef3118cc4f33a5d54718b62aedd336",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "pestphp/pest": "^1.20",
+                "spatie/ray": "^1.28"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Orhanerday\\OpenAi\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Orhan Erday",
+                    "email": "orhanerday@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "OpenAI GPT-3 Api Client in PHP",
+            "homepage": "https://github.com/orhanerday/open-ai",
+            "keywords": [
+                "open-ai",
+                "orhanerday"
+            ],
+            "support": {
+                "issues": "https://github.com/orhanerday/open-ai/issues",
+                "source": "https://github.com/orhanerday/open-ai/tree/4.7.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/orhanerday",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-03-08T08:04:02+00:00"
+        },
+        {
+            "name": "vigstudio/laravel-ai",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vigstudio/laravel-ai.git",
+                "reference": "f8c6865aa754623f08e518751fad4ab91462df15"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vigstudio/laravel-ai/zipball/f8c6865aa754623f08e518751fad4ab91462df15",
+                "reference": "f8c6865aa754623f08e518751fad4ab91462df15",
+                "shasum": ""
+            },
+            "require": {
+                "orhanerday/open-ai": "^4.7.1",
+                "php": "^8.1"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "VigStudio\\LaravelAI\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "VigStudio\\LaravelAI\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Vincenzo Petrucci",
+                    "email": "vincenzo.petrucci@gmail.com",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Nghia Ne",
+                    "email": "vingamagic@gmail.com",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "A laravel plugin to interact with AI providers",
+            "keywords": [
+                "ai",
+                "artificial intelligence",
+                "gpt3",
+                "gpt4",
+                "laravel",
+                "machine learning",
+                "openai"
+            ],
+            "support": {
+                "source": "https://github.com/vigstudio/laravel-ai/tree/main"
+            },
+            "time": "2023-03-31T03:14:32+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "vigstudio/laravel-ai": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}

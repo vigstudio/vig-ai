@@ -1,0 +1,10 @@
+{
+    "id": "vigstudio/vig-ai",
+    "name": "Vig Ai Content",
+    "namespace": "VigStudio\\VigAI\\",
+    "provider": "VigStudio\\VigAI\\Providers\\VigAiServiceProvider",
+    "author": "Nghĩa Nè",
+    "url": "https://nghiane.com",
+    "version": "1.0",
+    "description": "AI Content Generator for Botble CMS"
+}

@@ -1,0 +1,46 @@
+{
+    "name": "vigstudio/laravel-ai",
+    "description": "A laravel plugin to interact with AI providers",
+    "type": "library",
+    "licence": "MIT",
+    "keywords": [
+        "laravel",
+        "ai",
+        "artificial intelligence",
+        "machine learning",
+        "openai",
+        "gpt3",
+        "gpt4"
+    ],
+    "authors": [
+        {
+            "name": "Vincenzo Petrucci",
+            "email": "vincenzo.petrucci@gmail.com",
+            "role": "Maintainer"
+        },
+        {
+            "name": "Nghia Ne",
+            "email": "vingamagic@gmail.com",
+            "role": "Maintainer"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.1",
+        "orhanerday/open-ai": "^4.7.1"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "VigStudio\\LaravelAI\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "VigStudio\\LaravelAI\\ServiceProvider"
+            ]
+        }
+    },
+    "prefer-stable": true
+}
