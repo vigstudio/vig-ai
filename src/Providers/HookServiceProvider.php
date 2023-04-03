@@ -15,7 +15,7 @@ class HookServiceProvider extends ServiceProvider
 
     public function addViewButton($data)
     {
-        Assets::addScriptsDirectly(['vendor/core/plugins/vig-ai/js/vig-ai.js']);
+        Assets::addScriptsDirectly(['vendor/core/plugins/vig-ai/js/vig-ai.js?v=1.0.1']);
 
         return $data . view('plugins/vig-ai::index')->render();
     }

@@ -36,11 +36,11 @@ const editor = new EditorJS({
             class: Delimiter,
         },
         list: {
-            class: List,
+            class: NestedList,
             inlineToolbar: true,
             config: {
                 defaultStyle: 'unordered'
-            }
+            },
         },
         quote: {
             class: Quote,
@@ -161,12 +161,6 @@ function splitBlock(content) {
     return blocks;
 }
 
-function removeActionList() {
-    $('#modal-vig-ai-body .list-group-item').each(function (index) {
-        $(this).removeClass('active');
-    });
-}
-
 function ajaxAi(button, ask) {
     $(button).prop('disabled', true).addClass('button-loading');
     $.ajax({
@@ -217,32 +211,22 @@ $(document).on('click', '.btn-vig-ai-completion', function (event) {
     ajaxAi(this, ask);
 });
 
-$(document).on('click', '#vig-select-completion', function (event) {
-    removeActionList();
-    $(this).addClass('active');
-    $('#content-modal-body').html($('#content-1').html());
-});
-
-$(document).on('click', '#vig-select-chat', function (event) {
-    removeActionList();
-    $(this).addClass('active');
-    $('#content-modal-body').html($('#content-2').html());
-});
-
 $(document).on('click', '.vig-import-editor', function (event) {
-    console.log(window.EDITOR.CKEDITOR.leng);
-    if (window.EDITOR.CKEDITOR['content']) {
+
+    if (Object.keys(window.EDITOR.CKEDITOR).length !== 0) {
         window.EDITOR.CKEDITOR['content'].setData('');
-    } else {
-        window.tinyMCE.activeEditor.setContent('');
     }
 
+    if (typeof window.tinyMCE !== 'undefined' && typeof window.tinyMCE.activeEditor !== 'undefined') {
+        window.tinyMCE.activeEditor.setContent('');
+    }
 
     editor.save().then((outputData) => {
         const blocks = outputData.blocks;
         const outputHtml = [];
 
         blocks.forEach((block) => {
+            console.log(block.type);
             switch (block.type) {
                 case 'paragraph':
                     outputHtml.push(`<p>${block.data.text}</p>`);
@@ -256,6 +240,21 @@ $(document).on('click', '.vig-import-editor', function (event) {
                 case 'image':
                     outputHtml.push(`<img src="${block.data.file.url}" alt="${block.data.caption}" />`);
                     break;
+                case 'list':
+                    if (block.data?.style === 'unordered') {
+                        outputHtml.push('<ul>');
+                    } else if (block.data?.style === 'ordered') {
+                        outputHtml.push('<ol>');
+                    }
+                    block.data?.items?.forEach((item) => {
+                        outputHtml.push(`<li>${item}</li>`);
+                    });
+                    if (block.data?.style === 'unordered') {
+                        outputHtml.push('</ul>');
+                    } else if (block.data?.style === 'ordered') {
+                        outputHtml.push('</ol>');
+                    }
+                    break;
                 default:
                     outputHtml.push(`<p>${block.data.text}</p>`);
                     break;
@@ -264,9 +263,11 @@ $(document).on('click', '.vig-import-editor', function (event) {
 
         const fullHtml = outputHtml.join('');
 
-        if (window.EDITOR.CKEDITOR) {
+        if (Object.keys(window.EDITOR.CKEDITOR).length !== 0) {
             window.EDITOR.CKEDITOR['content'].setData(fullHtml);
-        } else {
+        }
+
+        if (typeof window.tinyMCE !== 'undefined' && typeof window.tinyMCE.activeEditor !== 'undefined') {
             window.tinyMCE.activeEditor.setContent(fullHtml);
         }
     }).catch((error) => {

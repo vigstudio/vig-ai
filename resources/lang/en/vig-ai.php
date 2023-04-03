@@ -12,5 +12,5 @@ return [
     'close' => 'Close',
     'import_to_editor' => 'Import Content To Editor',
     'prompt' => 'Start with a detailed description',
-    'completion_get' => 'Get Form Completion',
+    'completion_get' => 'Generator Content',
 ];
