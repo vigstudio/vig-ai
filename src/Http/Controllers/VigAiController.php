@@ -87,15 +87,23 @@ class VigAiController extends BaseController
     {
         return match ($type) {
             '1' => "Write a blog post titled \"$topic\".
-                Format the content using appropriate Markdown,
+                    Format the content using appropriate Markdown,
                     The content of the article should be between 1500 and 2000 words in length to ensure full information and value for readers
                     Content should contain subheadings (H2, H3) to make a difference in the article and help readers easily find the necessary information.
                     The content should be arranged in a logical sequence and have all the necessary information to answer for the reader.
-                    and identify the language in which \"$topic\" is written to ensure that your blog post is written in that language.",
-            '2' => "Make outline a blog post titled \"$topic\". Format the content using appropriate Markdown. and identify the language in which \"$topic\" is written to ensure that your blog post is written in that language.",
-            '3' => "Brainstorm ideas on \"$topic\". Format the content using appropriate Markdown and identify the language in which \"$topic\" is written to ensure that your blog post is written in that language.",
-            '4' => "Write a social media post about \"$topic\" with hashtags. Format the content using appropriate Markdown and identify the language in which \"$topic\" is written to ensure that your blog post is written in that language.",
-            '5' => "Write a creative story about  \"$topic\" with content that attracts readers. Format the content using appropriate Markdown and identify the language in which \"$topic\" is written to ensure that your blog post is written in that language."
+                    \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language.",
+
+            '2' => "Make outline a blog post titled \"$topic\". Format the content using appropriate Markdown.
+                    \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language.",
+
+            '3' => "Brainstorm ideas on \"$topic\". Format the content using appropriate Markdown.
+                    \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language.",
+
+            '4' => "Write a social media post about \"$topic\" with hashtags. Format the content using appropriate Markdown.
+                    \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language.",
+
+            '5' => "Write a creative story about  \"$topic\" with content that attracts readers. Format the content using appropriate Markdown.
+                    \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language."
         };
     }
 }

@@ -8,20 +8,21 @@ import DragDrop from 'editorjs-drag-drop';
 import Undo from 'editorjs-undo';
 import * as cheerio from 'cheerio';
 const showdown = require('showdown');
+require('showdown-twitter');
 
 let externalId = null;
 let promptType = 1;
 let editor;
 
 document.addEventListener("DOMContentLoaded", function (event) {
-    editor = new EditorJS('editorjs-vig-ai', {
+    editor = new EditorJS({
+        holder: 'editorjs-vig-ai',
         autofocus: true,
         onReady: () => {
             new DragDrop(editor);
             new Undo({
                 editor
             });
-            editor.blocks.renderFromHTML("<h1>Hello there xD</h1>")
         },
         tools: {
             header: {
@@ -84,12 +85,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 }
             },
         },
-        logLevel: 'VERBOSE'
+        logLevel: 'ERROR',
+        placeholder: 'Let`s write an awesome story!'
     });
 });
 
 function splitBlock(content) {
-    var converter = new showdown.Converter();
+    var converter = new showdown.Converter({extensions: ['twitter']});
     const html = converter.makeHtml(content);
     const $ = cheerio.load(html);
     const blocks = [];
@@ -127,25 +129,22 @@ function splitBlock(content) {
                     }
                 });
                 break;
+
             case 'ul':
-                const ulItems = $(el).find('li');
-                const ulData = ulItems.map((j, item) => $(item).html()).get();
                 blocks.push({
                     type: 'list',
                     data: {
                         style: 'unordered',
-                        items: ulData
+                        items: parseList($(el))
                     }
                 });
                 break;
             case 'ol':
-                const olItems = $(el).find('li');
-                const olData = olItems.map((j, item) => $(item).html()).get();
                 blocks.push({
                     type: 'list',
                     data: {
                         style: 'ordered',
-                        items: olData
+                        items: parseList($(el))
                     }
                 });
                 break;
@@ -161,6 +160,31 @@ function splitBlock(content) {
     });
 
     return blocks;
+}
+
+function parseList($list) {
+    const items = [];
+    $list.children().each((i, el) => {
+        const $el = $(el);
+
+        if (el.tagName.toLowerCase() === 'li') {
+            items.push({
+                "content": $el.text(),
+                "items": []
+            });
+        } else if (el.tagName.toLowerCase() === 'ul') {
+            items.push({
+                "content": $el.text(),
+                "items": parseList($el)
+            });
+        } else if (el.tagName.toLowerCase() === 'ol') {
+            items.push({
+                "content": $el.text(),
+                "items": parseList($el)
+            });
+        }
+    });
+    return items;
 }
 
 function ajaxAi(button, ask) {
