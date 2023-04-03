@@ -13,7 +13,7 @@ use Botble\PluginManagement\Abstracts\PluginOperationAbstract;
 
 class Plugin extends PluginOperationAbstract
 {
-    public static function activated()
+    public static function activate()
     {
         $migrationPath = plugin_path('vig-ai/vendor/vigstudio/laravel-ai/database/migrations');
 

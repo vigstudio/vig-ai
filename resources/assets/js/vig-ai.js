@@ -11,76 +11,81 @@ const showdown = require('showdown');
 
 let externalId = null;
 let promptType = 1;
+let editor;
 
-const editor = new EditorJS({
-    holder: 'editorjs-vig-ai',
-    onReady: () => {
-        new DragDrop(editor);
-        new Undo({
-            editor
-        });
-    },
-    tools: {
-        header: {
-            class: Header,
-            shortcut: 'CMD+SHIFT+H',
-            config: {
-                placeholder: 'Enter a header',
-                levels: [2, 3, 4],
-                defaultLevel: 2
-            }
+document.addEventListener("DOMContentLoaded", function (event) {
+    editor = new EditorJS('editorjs-vig-ai', {
+        autofocus: true,
+        onReady: () => {
+            new DragDrop(editor);
+            new Undo({
+                editor
+            });
+            editor.blocks.renderFromHTML("<h1>Hello there xD</h1>")
         },
-        delimiter: {
-            class: Delimiter,
-        },
-        list: {
-            class: NestedList,
-            inlineToolbar: true,
-            config: {
-                defaultStyle: 'unordered'
-            },
-        },
-        quote: {
-            class: Quote,
-            inlineToolbar: true,
-            shortcut: 'CMD+SHIFT+O',
-            config: {
-                quotePlaceholder: 'Enter a quote',
-                captionPlaceholder: 'Quote\'s author',
-            },
-        },
-        image: {
-            class: ImageTool,
-            config: {
-                additionalRequestHeaders: {
-                    "X-CSRF-TOKEN": window.VigAiRoute.csrf,
-                },
-                uploader: {
-                    uploadByFile(file) {
-                        let form_data = new FormData();
-                        form_data.append('_token', window.VigAiRoute.csrf);
-                        form_data.append('file[]', file);
-
-                        return $.ajax({
-                            type: 'POST',
-                            url: window.VigAiRoute.upload_media,
-                            cache: false,
-                            contentType: false,
-                            processData: false,
-                            data: form_data,
-                        }).then(function (data) {
-                            return {
-                                success: 1,
-                                file: {
-                                    url: data.data.src,
-                                }
-                            };
-                        });
-                    },
+        tools: {
+            header: {
+                class: Header,
+                shortcut: 'CMD+SHIFT+H',
+                config: {
+                    placeholder: 'Enter a header',
+                    levels: [2, 3, 4],
+                    defaultLevel: 2
                 }
-            }
+            },
+            delimiter: {
+                class: Delimiter,
+            },
+            list: {
+                class: NestedList,
+                inlineToolbar: true,
+                config: {
+                    defaultStyle: 'unordered'
+                },
+            },
+            quote: {
+                class: Quote,
+                inlineToolbar: true,
+                shortcut: 'CMD+SHIFT+O',
+                config: {
+                    quotePlaceholder: 'Enter a quote',
+                    captionPlaceholder: 'Quote\'s author',
+                },
+            },
+            image: {
+                class: ImageTool,
+                config: {
+                    additionalRequestHeaders: {
+                        "X-CSRF-TOKEN": window.VigAiRoute.csrf,
+                    },
+                    uploader: {
+                        uploadByFile(file) {
+                            let form_data = new FormData();
+                            form_data.append('_token', window.VigAiRoute.csrf);
+                            form_data.append('file[]', file);
+
+                            return $.ajax({
+                                type: 'POST',
+                                url: window.VigAiRoute.upload_media,
+                                cache: false,
+                                contentType: false,
+                                processData: false,
+                                data: form_data,
+                            }).then(function (data) {
+                                return {
+                                    success: 1,
+                                    file: {
+                                        url: data.data.src,
+                                    }
+                                };
+                            });
+                        },
+                    }
+                }
+            },
         },
-    }
+        logLevel: 'VERBOSE'
+    });
 });
 
 function splitBlock(content) {
@@ -193,7 +198,6 @@ function ajaxAi(button, ask) {
         },
     });
 }
-
 
 $(document).on('change', '#completion-select-type', function (event) {
     event.preventDefault();
