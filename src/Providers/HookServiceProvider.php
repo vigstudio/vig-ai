@@ -17,7 +17,7 @@ class HookServiceProvider extends ServiceProvider
     public function addViewButton($data)
     {
         $count_model = Model::whereProvider('openai')->count();
-        Assets::addScriptsDirectly(['vendor/core/plugins/vig-ai/js/vig-ai.js']);
+        Assets::addScriptsDirectly(['vendor/core/plugins/vig-ai/js/vig-ai.js?v1.0.5']);
 
         return $data . view('plugins/vig-ai::index', compact('count_model'))->render();
     }

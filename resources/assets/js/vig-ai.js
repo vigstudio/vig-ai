@@ -4,11 +4,14 @@ import ImageTool from '@editorjs/image';
 import Header from '@editorjs/header';
 import Quote from '@editorjs/quote';
 import Delimiter from '@editorjs/delimiter';
+import Embed from '@editorjs/embed';
 import DragDrop from 'editorjs-drag-drop';
 import Undo from 'editorjs-undo';
 import * as cheerio from 'cheerio';
+const CodeTool = require('@editorjs/code');
 const showdown = require('showdown');
 require('showdown-twitter');
+const edjsHTML = require("editorjs-html");
 
 let externalId = null;
 let promptType = 1;
@@ -84,6 +87,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
                     }
                 }
             },
+            embed: Embed,
+            code: CodeTool,
         },
         logLevel: 'ERROR',
         placeholder: 'Let`s write an awesome story!'
@@ -247,47 +252,9 @@ $(document).on('click', '.vig-import-editor', function (event) {
     }
 
     editor.save().then((outputData) => {
-        const blocks = outputData.blocks;
-        const outputHtml = [];
-
-        blocks.forEach((block) => {
-            console.log(block.type);
-            switch (block.type) {
-                case 'paragraph':
-                    outputHtml.push(`<p>${block.data.text}</p>`);
-                    break;
-                case 'header':
-                    outputHtml.push(`<h${block.data.level}>${block.data.text}</h${block.data.level}>`);
-                    break;
-                case 'quote':
-                    outputHtml.push(`<blockquote>${block.data.text}</blockquote>`);
-                    break;
-                case 'image':
-                    outputHtml.push(`<img src="${block.data.file.url}" alt="${block.data.caption}" />`);
-                    break;
-                case 'list':
-                    if (block.data?.style === 'unordered') {
-                        outputHtml.push('<ul>');
-                    } else if (block.data?.style === 'ordered') {
-                        outputHtml.push('<ol>');
-                    }
-                    block.data?.items?.forEach((item) => {
-                        outputHtml.push(`<li>${item}</li>`);
-                    });
-                    if (block.data?.style === 'unordered') {
-                        outputHtml.push('</ul>');
-                    } else if (block.data?.style === 'ordered') {
-                        outputHtml.push('</ol>');
-                    }
-                    break;
-                default:
-                    outputHtml.push(`<p>${block.data.text}</p>`);
-                    break;
-            }
-        });
-
-        const fullHtml = outputHtml.join('');
-
+        const edjsParser = edjsHTML();
+        const html = edjsParser.parse(outputData);
+        const fullHtml = html.join('');
         if (Object.keys(window.EDITOR.CKEDITOR).length !== 0) {
             window.EDITOR.CKEDITOR['content'].setData(fullHtml);
         }
