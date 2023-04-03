@@ -5,6 +5,8 @@ return [
     'description' => 'AI Content Generator',
     'openai_api_key' => 'Open AI API Key',
     'alert_api' => 'Please enter OpenAI Api in settings of BotbleCMS',
+    'model-alert' => 'Please click the button below to import the model from open ai into the database to be able to use this function',
+    'import' => 'Import Model',
     'openai_api_key_placeholder' => 'sk-......',
     'button_show' => 'AI Content',
     'completion_api' => 'Use Completion Api',

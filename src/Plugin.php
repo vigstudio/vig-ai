@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Foundation\Application;
 use Botble\PluginManagement\Abstracts\PluginOperationAbstract;
-use VigStudio\LaravelAI\Models\Model;
-use VigStudio\LaravelAI\Enums\Provider;
 
 class Plugin extends PluginOperationAbstract
 {
@@ -24,16 +22,6 @@ class Plugin extends PluginOperationAbstract
 
         if ($files->isDirectory($migrationPath)) {
             $app['migrator']->run($migrationPath);
-        }
-
-        $provider = Provider::from('openai');
-
-        Model::whereProvider('openai')->update([
-            'is_active' => false,
-        ]);
-
-        foreach ($provider->getConnector()->listModels() as $modelBridge) {
-            $modelBridge->import();
         }
     }
 

@@ -3,6 +3,7 @@
 namespace VigStudio\VigAI\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use VigStudio\LaravelAI\Models\Model;
 use Assets;
 
 class HookServiceProvider extends ServiceProvider
@@ -15,9 +16,10 @@ class HookServiceProvider extends ServiceProvider
 
     public function addViewButton($data)
     {
-        Assets::addScriptsDirectly(['vendor/core/plugins/vig-ai/js/vig-ai.js?v=1.0.1']);
+        $count_model = Model::whereProvider('openai')->count();
+        Assets::addScriptsDirectly(['vendor/core/plugins/vig-ai/js/vig-ai.js?v=1.0.2']);
 
-        return $data . view('plugins/vig-ai::index')->render();
+        return $data . view('plugins/vig-ai::index', compact('count_model'))->render();
     }
 
     public function addSettings(?string $data = null): string

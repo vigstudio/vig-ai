@@ -27,30 +27,43 @@
                                             {{ trans('plugins/vig-ai::vig-ai.alert_api') }}
                                         </div>
                                     @endif
-                                    <div class="col-md-12 mb-3">
-                                        <div class="form-group">
-                                            <label class="control-label">Type Prompt</label>
-                                            <select class="form-control" value="" id="completion-select-type">
-                                                <option value="1">Blog Post</option>
-                                                <option value="2">Outline Blog</option>
-                                                <option value="3">Brainstorm ideas</option>
-                                                <option value="4">Write a social media</option>
-                                                <option value="5">Write a creative story</option>
-                                            </select>
-                                        </div>
-                                    </div>
 
-                                    <div class="col-md-12 mb-3">
-                                        <div class="form-group">
-                                            <label class="control-label">{{ trans('plugins/vig-ai::vig-ai.prompt') }}</label>
-                                            <textarea type="text" class="form-control" value="" id="completion-ask"></textarea>
+                                    @if ($count_model > 0)
+                                        <div class="col-md-12 mb-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Type Prompt</label>
+                                                <select class="form-control" value="" id="completion-select-type">
+                                                    <option value="1">Blog Post</option>
+                                                    <option value="2">Outline Blog</option>
+                                                    <option value="3">Brainstorm ideas</option>
+                                                    <option value="4">Write a social media</option>
+                                                    <option value="5">Write a creative story</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-12 mb-3">
-                                        <button type="button" class="btn btn-primary btn-vig-ai-completion">{{ trans('plugins/vig-ai::vig-ai.completion_get') }}</button>
-                                    </div>
+
+                                        <div class="col-md-12 mb-3">
+                                            <div class="form-group">
+                                                <label class="control-label">{{ trans('plugins/vig-ai::vig-ai.prompt') }}</label>
+                                                <textarea type="text" class="form-control" value="" id="completion-ask"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <button type="button" class="btn btn-primary btn-vig-ai-completion">{{ trans('plugins/vig-ai::vig-ai.completion_get') }}</button>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ trans('plugins/vig-ai::vig-ai.model-alert') }}<br />
+                                            <form action="{{ route('vig-ai.importModel') }}" method="POST">
+                                                @csrf
+                                                <button class="btn btn-success btn-submit-model" type="submit">{{ trans('plugins/vig-ai::vig-ai.import') }}</button>
+                                            </form>
+
+                                        </div>
+                                    @endif
+
                                     <div class="col-md-12">
-                                        <div id="editorjs"></div>
+                                        <div id="editorjs-vig-ai"></div>
                                     </div>
                                 </div>
                             </div>
@@ -61,37 +74,6 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ trans('plugins/vig-ai::vig-ai.close') }}</button>
                 <button type="button" class="btn btn-primary vig-import-editor" data-bs-dismiss="modal">{{ trans('plugins/vig-ai::vig-ai.import_to_editor') }}</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="content-1" style="display:none">
-    <div class="col-md-12 mb-3">
-        <div class="form-group">
-            <label class="control-label">{{ trans('plugins/vig-ai::vig-ai.prompt') }}</label>
-            <textarea type="text" class="form-control" value="" id="completion-ask"></textarea>
-        </div>
-    </div>
-    <div class="col-md-12 mb-3">
-        <button type="button" class="btn btn-primary btn-vig-ai-completion">{{ trans('plugins/vig-ai::vig-ai.completion_get') }}</button>
-    </div>
-</div>
-
-<div id="content-2" style="display:none">
-    <div class="col-md-12 mb-3">
-        <div class="form-group">
-            <label class="control-label">Title 2</label>
-            <textarea type="text" class="form-control" value="" id="input-title-vig-ai"></textarea>
-        </div>
-    </div>
-    <div class="col-md-12 mb-3">
-        <button type="button" class="btn btn-primary btn-vig-ai-completion">Get Completion</button>
-    </div>
-    <div class="col-md-12 mb-3">
-        <div class="card">
-            <div class="card-body">
-                <span class="vig-ai-content-result"></span>
             </div>
         </div>
     </div>

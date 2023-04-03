@@ -1,5 +1,4 @@
 import EditorJS from '@editorjs/editorjs';
-import List from '@editorjs/list';
 import NestedList from '@editorjs/nested-list';
 import ImageTool from '@editorjs/image';
 import Header from '@editorjs/header';
@@ -7,7 +6,6 @@ import Quote from '@editorjs/quote';
 import Delimiter from '@editorjs/delimiter';
 import DragDrop from 'editorjs-drag-drop';
 import Undo from 'editorjs-undo';
-import BlockAi from './block-ai.js';
 import * as cheerio from 'cheerio';
 const showdown = require('showdown');
 
@@ -15,7 +13,7 @@ let externalId = null;
 let promptType = 1;
 
 const editor = new EditorJS({
-    autofocus: true,
+    holder: 'editorjs-vig-ai',
     onReady: () => {
         new DragDrop(editor);
         new Undo({
@@ -82,8 +80,7 @@ const editor = new EditorJS({
                 }
             }
         },
-    },
-    debug: false
+    }
 });
 
 function splitBlock(content) {
@@ -275,3 +272,26 @@ $(document).on('click', '.vig-import-editor', function (event) {
     });
 
 });
+
+$(document).on('click', '.btn-submit-model', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    $(this).prop('disabled', true).addClass('button-loading');
+    $.ajax({
+        type: 'POST',
+        url: route('vig-ai.importModel'),
+        data: {
+            '_token': window.VigAiRoute.csrf,
+        },
+        success: res => {
+            Botble.showSuccess(res.message);
+            window.location.reload();
+            $(button).prop('disabled', false).removeClass('button-loading');
+        },
+        error: res => {
+            $(button).prop('disabled', false).removeClass('button-loading');
+            Botble.handleError(res + ' ' + res.status);
+        },
+    });
+});
+

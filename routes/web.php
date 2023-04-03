@@ -13,5 +13,6 @@ Route::group([
     ], function () {
         Route::post('completion', ['as' => 'completion', 'uses' => 'completion']);
         Route::post('chat', ['as' => 'chat', 'uses' => 'chat']);
+        Route::post('importModel', ['as' => 'importModel', 'uses' => 'importModel']);
     });
 });

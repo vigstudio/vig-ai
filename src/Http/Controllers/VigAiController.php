@@ -9,6 +9,7 @@ use VigStudio\LaravelAI\Bridges\ChatBridge;
 use VigStudio\LaravelAI\Bridges\CompletionBridge;
 use VigStudio\LaravelAI\Enums\Provider;
 use VigStudio\LaravelAI\Models\Chat;
+use VigStudio\LaravelAI\Models\Model;
 use Illuminate\Support\Arr;
 
 class VigAiController extends BaseController
@@ -65,6 +66,21 @@ class VigAiController extends BaseController
         ];
 
         return $response->setData($data)->toApiResponse();
+    }
+
+    public function importModel(Request $request, BaseHttpResponse $response)
+    {
+        $provider = Provider::from('openai');
+
+        Model::whereProvider('openai')->update([
+            'is_active' => false,
+        ]);
+
+        foreach ($provider->getConnector()->listModels() as $modelBridge) {
+            $modelBridge->import();
+        }
+
+        return $response->setData([])->toApiResponse();
     }
 
     public function prompt(string $topic, string|int $type)
