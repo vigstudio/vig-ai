@@ -15,4 +15,10 @@ return [
     'import_to_editor' => 'Import Content To Editor',
     'prompt' => 'Start with a detailed description',
     'completion_get' => 'Generator Content',
+    'select_type_prompt'  => 'Type Prompt',
+    'select_1'  => 'Blog Post',
+    'select_2'  => 'Outline Blog',
+    'select_3'  => 'Brainstorm ideas',
+    'select_4'  => 'Write a social media',
+    'select_5'  => 'Write a creative story',
 ];

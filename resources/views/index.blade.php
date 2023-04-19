@@ -31,13 +31,13 @@
                                     @if ($count_model > 0)
                                         <div class="col-md-12 mb-3">
                                             <div class="form-group">
-                                                <label class="control-label">Type Prompt</label>
+                                                <label class="control-label">{{ trans('plugins/vig-ai::vig-ai.select_type_prompt') }}</label>
                                                 <select class="form-control" value="" id="completion-select-type">
-                                                    <option value="1">Blog Post</option>
-                                                    <option value="2">Outline Blog</option>
-                                                    <option value="3">Brainstorm ideas</option>
-                                                    <option value="4">Write a social media</option>
-                                                    <option value="5">Write a creative story</option>
+                                                    <option value="1">{{ trans('plugins/vig-ai::vig-ai.select_1') }}</option>
+                                                    <option value="2">{{ trans('plugins/vig-ai::vig-ai.select_2') }}</option>
+                                                    <option value="3">{{ trans('plugins/vig-ai::vig-ai.select_3') }}</option>
+                                                    <option value="4">{{ trans('plugins/vig-ai::vig-ai.select_4') }}</option>
+                                                    <option value="5">{{ trans('plugins/vig-ai::vig-ai.select_5') }}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -51,7 +51,9 @@
                                         <div class="col-md-12 mb-3">
                                             <button type="button" class="btn btn-primary btn-vig-ai-completion">{{ trans('plugins/vig-ai::vig-ai.completion_get') }}</button>
                                         </div>
-                                    @else
+                                    @endif
+
+                                    @if (!empty(config('laravel-ai.openai.api_key')) && $count_model == 0)
                                         <div class="alert alert-danger" role="alert">
                                             {{ trans('plugins/vig-ai::vig-ai.model-alert') }}<br />
                                             <form action="{{ route('vig-ai.importModel') }}" method="POST">
@@ -82,6 +84,7 @@
 @push('header')
     <script>
         window.VigAiRoute = {
+            uuid: "{{ Str::uuid() }}",
             completion: "{{ route('vig-ai.completion') }}",
             chat: "{{ route('vig-ai.chat') }}",
             upload_media: "{{ route('media.files.upload') }}",

@@ -30,7 +30,7 @@ class ServiceProvider extends IlluminateServiceProvider
     private function loadMigrations(): void
     {
         $this->loadMigrationsFrom([
-            __DIR__ . '/../database/migrations/',
+            __DIR__.'/../database/migrations/',
         ]);
     }
 
@@ -52,7 +52,7 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     private function mergeConfigurations(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/laravel-ai.php', 'laravel-ai');
+        $this->mergeConfigFrom(__DIR__.'/../config/laravel-ai.php', 'laravel-ai');
     }
 
     /**

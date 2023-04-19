@@ -64,13 +64,17 @@ class OpenAIConnector implements Connector
      */
     public function listModels(): Collection
     {
-        $data = json_decode($this->client->listModels())->data;
+        $models = json_decode($this->client->listModels());
 
-        return Collection::make($data)->map(function ($model) {
-            return ModelBridge::new()->withProvider(Provider::OpenAI)
-                ->withName($model->id ?? '')
-                ->withExternalId($model->id ?? '');
-        });
+        if (empty($models->error)) {
+            return Collection::make($models->data)->map(function ($model) {
+                return ModelBridge::new()->withProvider(Provider::OpenAI)
+                    ->withName($model->id ?? '')
+                    ->withExternalId($model->id ?? '');
+            });
+        }
+
+        return Collection::make($models->error);
     }
 
     /**

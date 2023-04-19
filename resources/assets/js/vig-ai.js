@@ -7,11 +7,14 @@ import Delimiter from '@editorjs/delimiter';
 import Embed from '@editorjs/embed';
 import DragDrop from 'editorjs-drag-drop';
 import Undo from 'editorjs-undo';
+import CodeTool from '@editorjs/code';
 import * as cheerio from 'cheerio';
-const CodeTool = require('@editorjs/code');
-const showdown = require('showdown');
+import * as showdown from 'showdown';
+import * as edjsHTML from 'editorjs-html';
 require('showdown-twitter');
-const edjsHTML = require("editorjs-html");
+
+//VigAi Block
+import BlockAi from './BlockAi/BlockAi';
 
 let externalId = null;
 let promptType = 1;
@@ -28,6 +31,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
             });
         },
         tools: {
+            ai: {
+                class: BlockAi,
+                inlineToolbar: true,
+            },
             header: {
                 class: Header,
                 shortcut: 'CMD+SHIFT+H',
@@ -89,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             },
             embed: Embed,
             code: CodeTool,
+
         },
         logLevel: 'ERROR',
         placeholder: 'Let`s write an awesome story!'
@@ -279,9 +287,18 @@ $(document).on('click', '.btn-submit-model', function (event) {
             '_token': window.VigAiRoute.csrf,
         },
         success: res => {
-            Botble.showSuccess(res.message);
-            window.location.reload();
-            $(button).prop('disabled', false).removeClass('button-loading');
+            if (res.error) {
+                Botble.showError(res.message)
+                $(this).prop('disabled', false).removeClass('button-loading');
+            } else {
+                Botble.showSuccess(res.message);
+                setTimeout(() => {
+                    window.location.reload();
+                    $(this).prop('disabled', false).removeClass('button-loading');
+                }, 1000);
+
+            }
+
         },
         error: res => {
             $(button).prop('disabled', false).removeClass('button-loading');
