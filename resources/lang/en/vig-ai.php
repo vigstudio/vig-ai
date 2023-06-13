@@ -21,4 +21,6 @@ return [
     'select_3'  => 'Brainstorm ideas',
     'select_4'  => 'Write a social media',
     'select_5'  => 'Write a creative story',
+    'select_6'  => 'Write a job description',
+    'select_7'  => 'Write a product introduction',
 ];

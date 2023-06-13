@@ -38,6 +38,8 @@
                                                     <option value="3">{{ trans('plugins/vig-ai::vig-ai.select_3') }}</option>
                                                     <option value="4">{{ trans('plugins/vig-ai::vig-ai.select_4') }}</option>
                                                     <option value="5">{{ trans('plugins/vig-ai::vig-ai.select_5') }}</option>
+                                                    <option value="6">{{ trans('plugins/vig-ai::vig-ai.select_6') }}</option>
+                                                    <option value="7">{{ trans('plugins/vig-ai::vig-ai.select_7') }}</option>
                                                 </select>
                                             </div>
                                         </div>

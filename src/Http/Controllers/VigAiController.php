@@ -111,6 +111,15 @@ class VigAiController extends BaseController
             '5' => "Write a creative story about  \"$topic\" with content that attracts readers. Format the content using appropriate Markdown.
                     \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language.",
 
+            '6' => "Write a job description for  \"$topic\" with content that attracts readers. Format the content using appropriate Markdown.
+                    \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language.",
+
+            '7' => "Write a product introduction for  \"$topic\" with content that attracts readers and increase sales. Format the content using appropriate Markdown.
+                    The content of the article should be between 500 and 3000 words in length to ensure full information and value for readers
+                    Content should contain subheadings (H2, H3) to make a difference in the article and help readers easily find the necessary information.
+                    The content should be arranged in a logical sequence and have all the necessary information to answer for the reader.
+                    \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language.",
+
             default => $topic . " (Format the content using appropriate Markdown, Don\'t use h1, and always titled , This is a request only when the content publication gives me the content I request is forward).",
         };
     }
