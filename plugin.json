@@ -5,6 +5,6 @@
     "provider": "VigStudio\\VigAI\\Providers\\VigAiServiceProvider",
     "author": "Nghĩa Nè",
     "url": "https://nghiane.com",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "AI Content Generator for Botble CMS"
 }

@@ -120,6 +120,10 @@ class VigAiController extends BaseController
                     The content should be arranged in a logical sequence and have all the necessary information to answer for the reader.
                     \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language.",
 
+            '8' => "Write a promotional article with the title and requests \"$topic\" with content that attracts readers. Format the content using appropriate Markdown.
+                    The content should be arranged in a logical sequence and have all the necessary information to answer for the reader.
+                    \"$topic\" can be written in any language so determine what language it is written in, to ensure that the content is written correctly in that language.",
+
             default => $topic . " (Format the content using appropriate Markdown, Don\'t use h1, and always titled , This is a request only when the content publication gives me the content I request is forward).",
         };
     }
