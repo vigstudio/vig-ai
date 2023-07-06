@@ -8,7 +8,6 @@ Route::group([
 ], function () {
     Route::group([
         'prefix' => BaseHelper::getAdminPrefix() . '/vig-ai',
-        'middleware' => 'auth',
         'as' => 'vig-ai.',
     ], function () {
         Route::post('completion', ['as' => 'completion', 'uses' => 'completion']);

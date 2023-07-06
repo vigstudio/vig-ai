@@ -301,7 +301,7 @@ $(document).on('click', '.btn-submit-model', function (event) {
 
         },
         error: res => {
-            $(button).prop('disabled', false).removeClass('button-loading');
+            $(this).prop('disabled', false).removeClass('button-loading');
             Botble.handleError(res + ' ' + res.status);
         },
     });

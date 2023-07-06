@@ -61,7 +61,7 @@
                                             {{ trans('plugins/vig-ai::vig-ai.model-alert') }}<br />
                                             <form action="{{ route('vig-ai.importModel') }}" method="POST">
                                                 @csrf
-                                                <button class="btn btn-success btn-submit-model" type="submit">{{ trans('plugins/vig-ai::vig-ai.import') }}</button>
+                                                <button type="button" class="btn btn-success btn-submit-model" type="submit">{{ trans('plugins/vig-ai::vig-ai.import') }}</button>
                                             </form>
 
                                         </div>
