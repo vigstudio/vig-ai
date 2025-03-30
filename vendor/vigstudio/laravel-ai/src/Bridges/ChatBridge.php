@@ -16,7 +16,7 @@ final class ChatBridge implements Bridge
     /**
      * @var string|null The external id of the chat, returned by the provider
      */
-    private ?string $externalId;
+    private ?string $externalId = '';
 
     /**
      * @var array The messages sent and received in the chat
@@ -125,7 +125,7 @@ final class ChatBridge implements Bridge
         /**
          * Get the response from the provider, in the TextResponse format
          */
-        $response = $this->provider->getConnector()->chat($this->model->external_id, $this->messages);
+        $response = $this->provider->getConnector()->chat($this->model->external_id, $this->messages, false);
 
         /**
          * Populate local data
@@ -147,7 +147,7 @@ final class ChatBridge implements Bridge
     /**
      * Send a message to the chat Stream
      */
-    public function sendStream($message): string
+    public function sendStream($message): \Generator
     {
         /**
          * Append the message to the messages array
@@ -158,24 +158,33 @@ final class ChatBridge implements Bridge
         ];
 
         /**
-         * Get the response from the provider, in the TextResponse format
+         * Get the response from the provider
          */
-        $response = $this->provider->getConnector()->chatStream($this->model->external_id, $this->messages);
+        $stream = $this->provider->getConnector()->chat($this->model->external_id, $this->messages, true);
+
+        $content = '';
+        foreach ($stream as $chunk) {
+            $content .= $chunk;
+            yield $chunk;
+        }
+
+        /**
+         * Create a message response
+         */
+        $messageResponse = [
+            'role' => 'assistant',
+            'content' => $content,
+        ];
 
         /**
          * Populate local data
          */
-        $this->externalId = $response->externalId();
-        $this->messages = array_merge($this->messages, [$response->message()->toArray()]);
+        $this->externalId = 'stream-response';
+        $this->messages = array_merge($this->messages, [$messageResponse]);
 
         /**
          * Import into a model
          */
         $this->import();
-
-        /**
-         * Return the content of the response
-         */
-        return $response->message()->content();
     }
 }

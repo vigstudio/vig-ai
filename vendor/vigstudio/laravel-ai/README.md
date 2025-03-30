@@ -10,16 +10,17 @@ The Laravel AI package provides an interface for connecting your Laravel applica
 - Keep track of the costs of your requests
 
 ## Installation
+
 You can install the package via composer:
 
-```bash 
-composer require illegal\laravel-ai
+```bash
+composer require vigstudio/laravel-ai
 ```
 
 After installation, publish the configuration file:
 
-```bash 
-php artisan vendor:publish --provider="[Package Name]ServiceProvider"
+```bash
+php artisan vendor:publish --provider="VigStudio\LaravelAI\ServiceProvider"
 ```
 
 ## Configuration

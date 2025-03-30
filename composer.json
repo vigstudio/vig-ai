@@ -10,12 +10,18 @@
         }
     ],
     "require": {
-        "vigstudio/laravel-ai": "dev-main"
+        "vigstudio/laravel-ai": "^0.0.4",
+        "symfony/http-client": "^7.2",
+        "nyholm/psr7": "^1.8"
     },
     "autoload": {
         "psr-4": {
             "VigStudio\\VigAI\\": "src/"
         }
     },
-    "config": {}
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
 }

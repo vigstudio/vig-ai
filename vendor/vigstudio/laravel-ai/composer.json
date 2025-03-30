@@ -27,7 +27,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^8.1",
-        "orhanerday/open-ai": "^4.7.1"
+        "vigstudio/laravel-openai-client": "^0.0.1"
     },
     "require-dev": {},
     "autoload": {
@@ -39,7 +39,10 @@
         "laravel": {
             "providers": [
                 "VigStudio\\LaravelAI\\ServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "OpenAI": "OpenAI\\Laravel\\Facades\\OpenAI"
+            }
         }
     },
     "prefer-stable": true

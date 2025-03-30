@@ -6,6 +6,7 @@ use VigStudio\LaravelAI\Contracts\Bridge;
 use VigStudio\LaravelAI\Contracts\HasModel;
 use VigStudio\LaravelAI\Contracts\HasNew;
 use VigStudio\LaravelAI\Contracts\HasProvider;
+use VigStudio\LaravelAI\Enums\Provider;
 use VigStudio\LaravelAI\Models\Model;
 
 final class ModelBridge implements Bridge
@@ -95,11 +96,11 @@ final class ModelBridge implements Bridge
     {
         $model = Model::updateOrCreate([
             'external_id' => $this->externalId,
-            'provider' => $this->provider,
+            'provider' => $this->provider ?? Provider::OpenAI,
         ], array_merge(
             $this->toArray(),
             [
-                'provider' => $this->provider,
+                'provider' => $this->provider ?? Provider::OpenAI,
                 'is_active' => true,
             ]
         ));

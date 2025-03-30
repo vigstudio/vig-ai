@@ -2,15 +2,16 @@
 
 namespace VigStudio\LaravelAI\Connectors;
 
-use Exception;
 use Illuminate\Support\Collection;
-use Orhanerday\OpenAi\OpenAi;
-use VigStudio\LaravelAI\Bridges\ModelBridge;
+use OpenAI\Resources\Chat;
+use OpenAI\Resources\Completions;
+use OpenAI\Resources\Images;
+use OpenAI\Resources\Models;
 use VigStudio\LaravelAI\Contracts\Connector;
-use VigStudio\LaravelAI\Enums\Provider;
 use VigStudio\LaravelAI\Responses\ImageResponse;
 use VigStudio\LaravelAI\Responses\MessageResponse;
 use VigStudio\LaravelAI\Responses\TextResponse;
+use VigStudio\LaravelAI\Bridges\ModelBridge;
 
 /**
  * The Connector for the OpenAI provider
@@ -23,24 +24,42 @@ class OpenAIConnector implements Connector
     public const NAME = 'openai';
 
     /**
-     * @var int - The default max tokens for the OpenAI API
+     * The OpenAI chat client
      */
-    private int $defaultMaxTokens = 5;
+    private $chat;
 
     /**
-     * @var float - The default temperature for the OpenAI API
+     * The OpenAI images client
      */
-    private float $defaultTemperature = 0;
+    private $images;
 
     /**
-     * @param  OpenAi  $client - The OpenAI client
+     * The OpenAI models client
      */
-    public function __construct(protected OpenAi $client)
+    private $models;
+
+    /**
+     * The default max tokens for completions
+     */
+    private int $defaultMaxTokens = 1000;
+
+    /**
+     * The default temperature for completions
+     */
+    private float $defaultTemperature = 0.7;
+
+    /**
+     * Create a new OpenAI connector
+     */
+    public function __construct($chat, $images, $models)
     {
+        $this->chat = $chat;
+        $this->images = $images;
+        $this->models = $models;
     }
 
     /**
-     * Setter for the default max tokens
+     * Set the default max tokens for completions
      */
     public function withDefaultMaxTokens(int $maxTokens): self
     {
@@ -50,7 +69,7 @@ class OpenAIConnector implements Connector
     }
 
     /**
-     * Setter for the default temperature
+     * Set the default temperature for completions
      */
     public function withDefaultTemperature(float $temperature): self
     {
@@ -64,185 +83,134 @@ class OpenAIConnector implements Connector
      */
     public function listModels(): Collection
     {
-        $models = json_decode($this->client->listModels());
+        $response = $this->models->list();
 
-        if (empty($models->error)) {
-            return Collection::make($models->data)->map(function ($model) {
-                return ModelBridge::new()->withProvider(Provider::OpenAI)
-                    ->withName($model->id ?? '')
-                    ->withExternalId($model->id ?? '');
-            });
-        }
-
-        return Collection::make($models->error);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws Exception
-     */
-    public function complete(string $model, string $prompt, int $maxTokens = null, float $temperature = null): TextResponse
-    {
-        $response = $this->client->completion([
-            'model' => $model,
-            'prompt' => $prompt,
-            'max_tokens' => $maxTokens ?? $this->defaultMaxTokens,
-            'temperature' => $temperature ?? $this->defaultTemperature,
-        ]);
-
-        $response = json_decode($response);
-
-        $contents = [];
-
-        foreach ($response->choices as $result) {
-            $contents[] = $result->text;
-        }
-
-        return TextResponse::new()->withExternalId($response->id)->withMessage(
-            MessageResponse::new()->withContent(implode("\n--\n", $contents))->withRole('assistant')
-        );
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws Exception
-     */
-    public function completeStream(string $model, string $prompt, int $maxTokens = null, float $temperature = null): TextResponse
-    {
-        $contents = '';
-        $result = [];
-        $id = '';
-        $stream = $this->client->completion([
-            'model' => $model,
-            'prompt' => $prompt,
-            'max_tokens' => 3000,
-            'stream' => true,
-        ], function ($curl_info, $data) use (&$contents, &$id) {
-            $clean = str_replace('data: ', '', $data);
-            $arr = json_decode($clean, true);
-
-            if ($data != "data: [DONE]\n\n" and isset($arr['choices'][0]['text'])) {
-                $id = $arr['id'];
-                $contents .= $arr['choices'][0]['text'];
-            }
-
-            return strlen($data);
+        return collect($response->data)->map(function ($model) {
+            return ModelBridge::new()
+                ->withExternalId($model->id)
+                ->withName($model->id);
         });
-
-        $result[] = $contents;
-
-        return TextResponse::new()->withExternalId($id)->withMessage(
-            MessageResponse::new()->withContent(implode("\n--\n", $result))->withRole('assistant')
-        );
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @throws Exception
      */
-    public function chat(string $model, array|string $messages): TextResponse
+    public function chat(string $model, array|string $messages, bool $stream = false): TextResponse|\Generator
     {
-        $messages = is_array($messages) ? $messages : [
-            [
-                'role' => 'user',
-                'content' => $messages,
-            ],
-        ];
-
-        $chat = $this->client->chat([
-            'model' => $model,
-            'messages' => $messages,
-        ]);
-
-        $chat = json_decode($chat);
-
-        $response = TextResponse::new()->withExternalId($chat->id);
-
-        foreach ($chat->choices as $choice) {
-            $response->withMessage(
-                MessageResponse::new()->withContent($choice->message->content)->withRole($choice->message->role)
-            );
+        if ($stream) {
+            return $this->chatStream($model, $messages);
         }
 
-        return $response;
+        try {
+            $params = [
+                'model' => $model,
+                'messages' => is_array($messages) ? $messages : [
+                    ['role' => 'user', 'content' => $messages],
+                ],
+                'max_tokens' => $this->defaultMaxTokens,
+                'temperature' => $this->defaultTemperature,
+            ];
+
+            $response = $this->chat->create($params);
+            return $this->formatTextResponse($response);
+        } catch (\Exception $e) {
+            if ($this->isQuotaExceeded($e)) {
+                return $this->createQuotaExceededResponse();
+            }
+            throw $e;
+        }
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @throws Exception
+     * Chat with streaming response
      */
-    public function chatStream(string $model, array|string $messages): TextResponse
+    private function chatStream(string $model, array|string $messages): \Generator
     {
-        $messages = is_array($messages) ? $messages : [
-            [
-                'role' => 'user',
-                'content' => $messages,
-            ],
-        ];
+        try {
+            $params = [
+                'model' => $model,
+                'messages' => is_array($messages) ? $messages : [
+                    ['role' => 'user', 'content' => $messages],
+                ],
+                'max_tokens' => $this->defaultMaxTokens,
+                'temperature' => $this->defaultTemperature,
+            ];
 
-        $content = '';
-        $role = 'assistant';
-        $id = '';
-        $chat = $this->client->chat([
-            'model' => $model,
-            'messages' => $messages,
-            'stream' => true,
-        ], function ($curl_info, $data) use (&$content, &$role, &$id) {
-            $jsonStrings = explode("\n\n", $data);
-            foreach ($jsonStrings as $string) {
-                $clean = str_replace('data: ', '', $string);
-                $arr = json_decode($clean, true);
-
-                if (! empty($arr['choices'][0]['delta']['role'])) {
-                    $role = $arr['choices'][0]['delta']['role'];
-                }
-
-                if (! empty($arr['id'])) {
-                    $id = $arr['id'];
-                }
-
-                if (! empty($arr['choices'][0]['delta']['content'])) {
-                    $content .= $arr['choices'][0]['delta']['content'];
+            $response = $this->chat->createStreamed($params);
+            foreach ($response as $chunk) {
+                if (isset($chunk->choices[0]->delta->content)) {
+                    yield $chunk->choices[0]->delta->content;
                 }
             }
-
-            return strlen($data);
-        });
-
-        $response = TextResponse::new()->withExternalId($id);
-
-        $response->withMessage(
-            MessageResponse::new()->withContent($content)->withRole($role)
-        );
-
-        return $response;
+        } catch (\Exception $e) {
+            if ($this->isQuotaExceeded($e)) {
+                yield $this->createQuotaExceededResponse()->message()->content();
+            } else {
+                throw $e;
+            }
+        }
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @throws Exception
      */
     public function imageGenerate(string $prompt, int $width, int $height): ImageResponse
     {
-        $response = $this->client->image([
-            'prompt' => $prompt,
-            'n' => 1,
-            'size' => sprintf('%dx%d', $width, $height),
-            'response_format' => 'url',
-        ]);
+        try {
+            $response = $this->images->create([
+                'prompt' => $prompt,
+                'n' => 1,
+                'size' => "{$width}x{$height}",
+            ]);
 
-        $url = null;
-        $response = json_decode($response);
-        foreach ($response->data as $data) {
-            $url = $data->url;
-            // $data->b64_json; // null
+            return ImageResponse::new()
+                ->withUrl($response->data[0]->url);
+        } catch (\Exception $e) {
+            if ($this->isQuotaExceeded($e)) {
+                return ImageResponse::new()
+                    ->withUrl('https://via.placeholder.com/'.$width.'x'.$height.'?text=Quota+Exceeded');
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Format a text response from OpenAI
+     */
+    private function formatTextResponse($response): TextResponse
+    {
+        return TextResponse::new()
+            ->withExternalId($response->id)
+            ->withMessage(
+                MessageResponse::new()
+                    ->withContent($response->choices[0]->message->content)
+                    ->withRole($response->choices[0]->message->role)
+            );
+    }
+
+    /**
+     * Create a quota exceeded response
+     */
+    private function createQuotaExceededResponse(): TextResponse
+    {
+        return TextResponse::new()
+            ->withExternalId('quota-exceeded')
+            ->withMessage(
+                MessageResponse::new()
+                    ->withContent('Xin lỗi, tôi đã đạt giới hạn quota. Vui lòng thử lại sau.')
+                    ->withRole('assistant')
+            );
+    }
+
+    /**
+     * Check if the exception is a quota exceeded error
+     */
+    private function isQuotaExceeded(\Exception $e): bool
+    {
+        if (!$e instanceof \OpenAI\Exceptions\ErrorException) {
+            return false;
         }
 
-        return ImageResponse::new()->withCreatedAt($response->created)->withUrl($url);
+        return $e->getError()['code'] === 'insufficient_quota';
     }
 }

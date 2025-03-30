@@ -22,7 +22,7 @@ class Chat extends Command
     {
         $provider = $this->askForProvider();
 
-        $chat = ChatBridge::new()->withProvider($provider)->withModel('gpt-3.5-turbo');
+        $chat = ChatBridge::new()->withProvider($provider)->withModel('gpt-4o-mini');
 
         while (1) {
             $message = $this->ask('You');
@@ -31,7 +31,16 @@ class Chat extends Command
             }
 
             if ($this->option('stream')) {
-                $this->info('AI: '.$chat->sendStream($message));
+                $this->newLine();
+                $this->info('AI: ');
+                ob_start();
+                $stream = $chat->sendStream($message);
+                foreach ($stream as $chunk) {
+                    echo $chunk;
+                    ob_flush();
+                }
+                ob_end_flush();
+                $this->newLine();
             } else {
                 $this->info('AI: '.$chat->send($message));
             }

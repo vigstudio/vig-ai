@@ -13,12 +13,21 @@
             <div class="form-group mb-3">
                 <div class="form-group mb-3">
                     <label class="text-title-field">{{ trans('plugins/vig-ai::vig-ai.openai_api_key') }}</label>
-                    <input data-counter="120" type="text" class="next-input"
+                    <input data-counter="300" type="text" class="next-input"
                            placeholder="{{ trans('plugins/vig-ai::vig-ai.openai_api_key_placeholder') }}"
                            value="{{ setting('vig_openai_api_key', '') }}" name="vig_openai_api_key">
                 </div>
             </div>
 
+
+            <div class="form-group mb-3">
+                <div class="form-group mb-3">
+                    <label class="text-title-field">{{ trans('plugins/vig-ai::vig-ai.vig_openai_organization') }}</label>
+                    <input data-counter="300" type="text" class="next-input"
+                           placeholder="{{ trans('plugins/vig-ai::vig-ai.vig_openai_organization_placeholder') }}"
+                           value="{{ setting('vig_openai_organization', '') }}" name="vig_openai_organization">
+                </div>
+            </div>
         </div>
     </div>
 </div>

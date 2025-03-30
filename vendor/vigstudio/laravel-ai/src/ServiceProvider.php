@@ -4,9 +4,8 @@ namespace VigStudio\LaravelAI;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
-use Orhanerday\OpenAi\OpenAi;
+use OpenAI\Laravel\Facades\OpenAI;
 use VigStudio\LaravelAI\Commands\Chat;
-use VigStudio\LaravelAI\Commands\Complete;
 use VigStudio\LaravelAI\Commands\ImageGenerate;
 use VigStudio\LaravelAI\Commands\ImportModels;
 use VigStudio\LaravelAI\Connectors\OpenAIConnector;
@@ -41,7 +40,6 @@ class ServiceProvider extends IlluminateServiceProvider
     {
         $this->commands([
             Chat::class,
-            Complete::class,
             ImageGenerate::class,
             ImportModels::class,
         ]);
@@ -53,6 +51,12 @@ class ServiceProvider extends IlluminateServiceProvider
     private function mergeConfigurations(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/laravel-ai.php', 'laravel-ai');
+
+        // Override OpenAI config with our config, but keep the original organization
+        $openaiConfig = config('openai');
+        $openaiConfig['api_key'] = config('laravel-ai.openai.api_key');
+        $openaiConfig['organization'] = config('laravel-ai.openai.organization');
+        $this->app['config']->set('openai', $openaiConfig);
     }
 
     /**
@@ -61,18 +65,16 @@ class ServiceProvider extends IlluminateServiceProvider
     private function configureDependencyInjection(): void
     {
         /**
-         * The OpenAI client
-         */
-        $this->app->singleton(OpenAi::class, function () {
-            return new OpenAi(config('laravel-ai.openai.api_key'));
-        });
-        /**
          * The OpenAI connector
          */
         $this->app->singleton(OpenAIConnector::class, function (Application $app) {
-            return ( new OpenAIConnector($app->make(OpenAi::class)) )
-                ->withDefaultMaxTokens(config('laravel-ai.openai.default_max_tokens'))
-                ->withDefaultTemperature(config('laravel-ai.openai.default_temperature'));
+            return ( new OpenAIConnector(
+                OpenAI::chat(),
+                OpenAI::images(),
+                OpenAI::models()
+            ) )
+                ->withDefaultMaxTokens(1000)
+                ->withDefaultTemperature(0.7);
         });
     }
 }

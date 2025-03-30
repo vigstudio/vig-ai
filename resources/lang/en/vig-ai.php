@@ -4,6 +4,8 @@ return [
     'name' => 'Vig AI Content',
     'description' => 'AI Content Generator',
     'openai_api_key' => 'Open AI API Key',
+    'vig_openai_organization' => 'Open AI Organization',
+    'vig_openai_organization_placeholder' => 'org-.....',
     'alert_api' => 'Please enter OpenAI Api in settings of BotbleCMS',
     'model-alert' => 'Please click the button below to import the model from open ai into the database to be able to use this function',
     'import' => 'Import Model',

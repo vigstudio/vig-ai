@@ -36,11 +36,11 @@ class VigAiServiceProvider extends ServiceProvider
             ->publishAssets();
 
         config()->set(['laravel-ai.openai.api_key' => setting('vig_openai_api_key', '')]);
-        config()->set(['laravel-ai.openai.default_max_tokens' => 50]);
-        config()->set(['laravel-ai.openai.default_temperature' => 0.2]);
+        config()->set(['laravel-ai.openai.organization' => setting('vig_openai_organization', '')]);
 
         $this->app->booted(function () {
             $this->app->register(\VigStudio\LaravelAI\ServiceProvider::class);
+            $this->app->register(\OpenAI\Laravel\ServiceProvider::class);
             $this->app->register(HookServiceProvider::class);
         });
 

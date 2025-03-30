@@ -25,16 +25,11 @@ interface Connector
     public function listModels(): Collection;
 
     /**
-     * Complete a prompt with the given model.
-     */
-    public function complete(string $model, string $prompt, int $maxTokens, float $temperature): TextResponse;
-
-    /**
      * Send a chat message to the given model.
      *
-     * @return TextResponse - The response from the provider
+     * @return TextResponse|\Generator - The response from the provider
      */
-    public function chat(string $model, array|string $messages): TextResponse;
+    public function chat(string $model, array|string $messages, bool $stream = false): TextResponse|\Generator;
 
     /**
      * Generate an image from the given prompt.
