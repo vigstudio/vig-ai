@@ -10,8 +10,8 @@ Route::group([
         'prefix' => BaseHelper::getAdminPrefix() . '/vig-ai',
         'as' => 'vig-ai.',
     ], function () {
-        Route::post('completion', ['as' => 'completion', 'uses' => 'completion']);
-        Route::post('chat', ['as' => 'chat', 'uses' => 'chat']);
+        Route::get('stream', ['as' => 'stream', 'uses' => 'stream']);
         Route::post('importModel', ['as' => 'importModel', 'uses' => 'importModel']);
+        Route::post('generateImage', ['as' => 'generateImage', 'uses' => 'generateImage']);
     });
 });

@@ -88,11 +88,18 @@
     <script>
         window.VigAiRoute = {
             uuid: "{{ Str::uuid() }}",
-            completion: "{{ route('vig-ai.completion') }}",
-            chat: "{{ route('vig-ai.chat') }}",
+            stream: "{{ route('vig-ai.stream') }}",
             upload_media: "{{ route('media.files.upload') }}",
             upload_url: "{{ route('media.download_url') }}",
             csrf: "{{ csrf_token() }}"
+        };
+
+        // Định nghĩa cấu hình cho tính năng chỉnh sửa inline
+        window.vigAiConfig = {
+            enableInlineEditing: true,
+            routes: {
+                inlineEdit: "{{ route('vig-ai.stream') }}"
+            }
         };
     </script>
 @endpush

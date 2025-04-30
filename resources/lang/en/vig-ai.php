@@ -26,4 +26,5 @@ return [
     'select_6'  => 'Write a job description',
     'select_7'  => 'Write a product introduction',
     'select_8'  => 'Write a promotional articles (ads)',
+    'quick_edit' => 'Quick Edit Mode',
 ];

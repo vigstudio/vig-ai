@@ -3,15 +3,16 @@
 namespace VigStudio\LaravelAI\Connectors;
 
 use Illuminate\Support\Collection;
+use OpenAI\Exceptions\ErrorException;
 use OpenAI\Resources\Chat;
 use OpenAI\Resources\Completions;
 use OpenAI\Resources\Images;
 use OpenAI\Resources\Models;
+use VigStudio\LaravelAI\Bridges\ModelBridge;
 use VigStudio\LaravelAI\Contracts\Connector;
 use VigStudio\LaravelAI\Responses\ImageResponse;
 use VigStudio\LaravelAI\Responses\MessageResponse;
 use VigStudio\LaravelAI\Responses\TextResponse;
-use VigStudio\LaravelAI\Bridges\ModelBridge;
 
 /**
  * The Connector for the OpenAI provider
@@ -112,11 +113,13 @@ class OpenAIConnector implements Connector
             ];
 
             $response = $this->chat->create($params);
+
             return $this->formatTextResponse($response);
         } catch (\Exception $e) {
             if ($this->isQuotaExceeded($e)) {
                 return $this->createQuotaExceededResponse();
             }
+
             throw $e;
         }
     }
@@ -132,7 +135,6 @@ class OpenAIConnector implements Connector
                 'messages' => is_array($messages) ? $messages : [
                     ['role' => 'user', 'content' => $messages],
                 ],
-                'max_tokens' => $this->defaultMaxTokens,
                 'temperature' => $this->defaultTemperature,
             ];
 
@@ -168,8 +170,9 @@ class OpenAIConnector implements Connector
         } catch (\Exception $e) {
             if ($this->isQuotaExceeded($e)) {
                 return ImageResponse::new()
-                    ->withUrl('https://via.placeholder.com/'.$width.'x'.$height.'?text=Quota+Exceeded');
+                    ->withUrl('https://via.placeholder.com/' . $width . 'x' . $height . '?text=Quota+Exceeded');
             }
+
             throw $e;
         }
     }
@@ -207,10 +210,38 @@ class OpenAIConnector implements Connector
      */
     private function isQuotaExceeded(\Exception $e): bool
     {
-        if (!$e instanceof \OpenAI\Exceptions\ErrorException) {
+        if (! $e instanceof ErrorException) {
             return false;
         }
 
-        return $e->getError()['code'] === 'insufficient_quota';
+        try {
+            // Trong phiên bản mới của OpenAI SDK, cấu trúc lỗi có thể khác
+            // Thử truy cập thông qua error() hoặc từ các thuộc tính khác
+            if (method_exists($e, 'getError')) {
+                return $e->getError()['code'] === 'insufficient_quota';
+            }
+
+            // Thử các cách khác để lấy mã lỗi
+            if (method_exists($e, 'error')) {
+                $error = $e->error();
+                if (is_array($error) && isset($error['code'])) {
+                    return $error['code'] === 'insufficient_quota';
+                }
+            }
+
+            // Kiểm tra nội dung message xem có chứa thông tin về quota không
+            $message = $e->getMessage();
+
+            return (
+                stripos($message, 'quota') !== false ||
+                stripos($message, 'insufficient_quota') !== false ||
+                stripos($message, 'rate limit') !== false
+            );
+        } catch (\Exception $innerException) {
+            // Nếu có lỗi khi truy cập thuộc tính lỗi, ghi log và trả về false
+            error_log('Lỗi khi kiểm tra quota: ' . $innerException->getMessage());
+
+            return false;
+        }
     }
 }
